@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 /* eslint-disable no-unused-vars */
 exports.ArticleMetadata = class ArticleMetadata {
   constructor(options) {
@@ -11,7 +13,7 @@ exports.ArticleMetadata = class ArticleMetadata {
   async get(id, params) {
     return {
       id,
-      text: `A new message with ID: ${id}!`
+      text: `A new message with ID: ${id}!`,
     };
   }
 
