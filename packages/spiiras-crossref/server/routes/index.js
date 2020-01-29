@@ -1,9 +1,12 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const axios = require('axios');
+const config = require('config');
+
+const router = express.Router();
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.send('OK!');
+router.get('/', async function(req, res, next) {
+  res.send('Get article by doi of another filter params');
 });
 
 module.exports = router;
