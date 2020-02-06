@@ -16,8 +16,9 @@ router.get('/*', async function(req, res, next) {
         headers: apiCall.headers,
       });
       res.send(metadata);
+    } else {
+      res.sendStatus(400);
     }
-    res.sendStatus(400);
   } catch (error) {
     console.error(error.message);
     res.sendStatus(404);
