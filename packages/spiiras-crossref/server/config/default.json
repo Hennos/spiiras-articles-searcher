@@ -2,7 +2,7 @@
   "port": 3000,
 
   "crossref": "https://api.crossref.org",
-  "agentName": "spiiras-crossref",
-  "agentVersion": 1.0,
+  "agentName": "crossref-query",
+  "agentVersion": "1.0.0",
   "mailTo": "gnomskg@gmail.com"
 }
