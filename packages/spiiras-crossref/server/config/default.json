@@ -3,5 +3,6 @@
 
   "agentName": "crossref-query",
   "agentVersion": "1.0.0",
-  "mailTo": "gnomskg@gmail.com"
+  "mailTo": "gnomskg@gmail.com",
+  "rows": 10
 }

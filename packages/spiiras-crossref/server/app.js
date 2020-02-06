@@ -21,6 +21,7 @@ app.use(
     agentName: config.agentName,
     agentVersion: config.agentVersion,
     mailTo: config.mailTo,
+    rows: config.rows,
   }),
 );
 
