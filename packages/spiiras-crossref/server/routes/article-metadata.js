@@ -6,14 +6,14 @@ const router = express.Router();
 /* GET article metadata by DOI. */
 router.get('/*', async function(req, res, next) {
   try {
-    const { endpoint: crossrefEndpoint, headers: crossrefHeaders } = req.crossref;
+    const { crossref } = req;
     const article = req.params[0];
     if (article) {
-      const url = `${crossrefEndpoint}/works/${article}`;
+      const apiCall = crossref.findArticleApiCall(article);
       const {
         data: { message: metadata },
-      } = await axios.get(url, {
-        headers: crossrefHeaders,
+      } = await axios.get(apiCall.url, {
+        headers: apiCall.headers,
       });
       res.send(metadata);
     }
