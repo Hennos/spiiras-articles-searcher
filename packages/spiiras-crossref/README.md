@@ -3,7 +3,7 @@
 Для установки, выполните в консоли следующие команды:
 
 - **git clone https://github.com/Hennos/spiiras-crossref.git**
-- **cd geodata-layers-api/server**
+- **cd spiiras-crossref/server**
 - **npm install**
 - **npm start**
 
