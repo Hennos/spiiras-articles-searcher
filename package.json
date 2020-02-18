@@ -4,7 +4,7 @@
   "scripts": {
     "start": "lerna run start",
     "test": "lerna run test",
-    "new-version": "lerna version --conversional-commits --yes",
+    "new-version": "lerna version --convensional-commits --yes",
     "diff": "lerna diff"
   },
   "devDependencies": {
