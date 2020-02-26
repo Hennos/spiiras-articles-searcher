@@ -1,7 +1,7 @@
-"use strict";
+'use strict';
 
-const service = require("../lib");
+const service = require('../lib');
 
-describe("api-service", () => {
-  it("needs tests");
+describe('api-service', () => {
+  it('needs tests');
 });
