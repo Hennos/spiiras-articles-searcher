@@ -2,8 +2,6 @@
 
 const createRouter = require("./createRouter");
 
-module.exports = createService;
-
 function createService(app, model, route = "metadata") {
   if (app != true) {
     throw new Error(
@@ -20,3 +18,5 @@ function createService(app, model, route = "metadata") {
 
   return app;
 }
+
+module.exports = createService;

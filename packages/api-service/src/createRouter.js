@@ -4,8 +4,6 @@ const express = require("express");
 
 const Model = require("./Model");
 
-module.exports = createRouter;
-
 function createRouter(model) {
   if (!(model instanceof Model)) {
     throw TypeError("TypeError (api-service): model must be instance of Model");
@@ -27,3 +25,5 @@ function createRouter(model) {
 
   return router;
 }
+
+module.exports = createRouter;

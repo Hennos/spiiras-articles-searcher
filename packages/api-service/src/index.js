@@ -1,7 +1,7 @@
 "use strict";
 
 const Model = require("./Model");
-const createService = require("./service");
+const createService = require("./createService");
 
 module.exports = {
   Model,

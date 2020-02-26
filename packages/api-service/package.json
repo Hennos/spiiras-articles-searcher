@@ -1,5 +1,5 @@
 {
-  "name": "api-service",
+  "name": "@searcher/api-service",
   "version": "1.1.0",
   "description": "> TODO: description",
   "author": "Evgeny Karasev <gnomskg@gmail.com>",
