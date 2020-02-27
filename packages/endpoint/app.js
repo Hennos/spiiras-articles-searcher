@@ -1,12 +1,19 @@
 const createError = require('http-errors');
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const path = require('path');
 const logger = require('morgan');
 
+const { createService, Model } = require('@searcher/api-service');
+const { createModel: createCrossrefModel } = require('@searcher/crossref-model');
+
 const indexRouter = require('./routes/index');
-const crossrefRouter = require('./routes/crossref');
 
 const app = express();
+
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -14,7 +21,16 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
-app.use('/crossref', crossrefRouter);
+
+const crossrefModel = createCrossrefModel({
+  rows: 10,
+  agent: {
+    name: 'spiiras-articles-searcher',
+    version: '1.1.0',
+    mailTo: 'gnomskg@gmail.com',
+  },
+});
+createService(app, crossrefModel, '/crossref');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
