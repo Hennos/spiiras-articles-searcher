@@ -1,11 +1,11 @@
 'use strict';
 
 class Model {
-  findArticle(id) {
+  async findArticle(id) {
     throw new TypeError('TypeError (api-service): no implementation for findArticle method');
   }
 
-  findArticles(query) {
+  async findArticles(searchQuery) {
     throw new TypeError('TypeError (api-service): no implementation for findArticles method');
   }
 }
