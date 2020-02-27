@@ -3,7 +3,7 @@
 
   "crossref": {
     "agentName": "spiiras-articles-searcher",
-    "agentVersion": "1.2.0",
+    "agentVersion": "1.2",
     "mailTo": "gnomskg@gmail.com",
     "rows": 10
   }
