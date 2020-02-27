@@ -1,6 +1,6 @@
 {
   "name": "@searcher/crossref-model",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "description": "> TODO: description",
   "author": "Evgeny Karasev <gnomskg@gmail.com>",
@@ -26,7 +26,7 @@
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "@searcher/api-service": "^1.1.0",
+    "@searcher/api-service": "^1.2.0",
     "axios": "^0.19.2"
   }
 }
