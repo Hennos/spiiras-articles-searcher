@@ -1,6 +1,7 @@
 {
   "name": "@searcher/api-service",
   "version": "1.2.0",
+  "private": true,
   "description": "> TODO: description",
   "author": "Evgeny Karasev <gnomskg@gmail.com>",
   "homepage": "https://github.com/Hennos/spiiras-articles-searcher#readme",
