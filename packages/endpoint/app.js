@@ -3,6 +3,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const logger = require('morgan');
+const config = require('config');
 
 const { createService, Model } = require('@searcher/api-service');
 const { createModel: createCrossrefModel } = require('@searcher/crossref-model');
@@ -23,11 +24,11 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 
 const crossrefModel = createCrossrefModel({
-  rows: 10,
+  rows: config.crossref.rows,
   agent: {
-    name: 'spiiras-articles-searcher',
-    version: '1.1.0',
-    mailTo: 'gnomskg@gmail.com',
+    name: config.crossref.agentName,
+    version: config.crossref.agentVersion,
+    mailTo: config.crossref.mailTo,
   },
 });
 createService(app, crossrefModel, '/crossref');
