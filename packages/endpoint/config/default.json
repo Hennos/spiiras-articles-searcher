@@ -1,0 +1,10 @@
+{
+  "port": 3001,
+
+  "crossref": {
+    "agentName": "crossref-query",
+    "agentVersion": "1.0.0",
+    "mailTo": "gnomskg@gmail.com",
+    "rows": 10
+  }
+}

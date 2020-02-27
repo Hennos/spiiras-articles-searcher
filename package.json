@@ -1,7 +1,19 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "start": "lerna run --stream start",
+    "debug": "lerna run --stream debug",
+    "test": "lerna run test",
+    "new-version": "lerna version --conventional-commits --yes",
+    "diff": "lerna diff"
+  },
   "devDependencies": {
-    "lerna": "^3.19.0"
+    "lerna": "^3.19.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-prettier": "^3.1.2",
+    "nodemon": "^2.0.2",
+    "prettier": "^1.19.1"
   }
 }
