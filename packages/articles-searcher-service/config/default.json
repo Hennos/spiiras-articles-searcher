@@ -1,0 +1,15 @@
+{
+  "port": 3001,
+
+  "crossref": {
+    "rows": 10,
+    "agentName": "spiiras-articles-searcher",
+    "agentVersion": "agentVersion",
+    "mailTo": "mailTo"
+  },
+
+  "scopus": {
+    "rows": 10,
+    "apiKey": "apiKey"
+  }
+}
