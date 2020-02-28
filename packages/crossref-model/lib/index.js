@@ -73,10 +73,12 @@ class CrossrefModel extends Model {
 
   encodeQuery(searchQuery) {
     const mapQueryScheme = this.mapQueryScheme();
-    return Object.entries(this.filterAllowed(searchQuery))
-      .map(([queryName, queryValue]) => [mapQueryScheme[queryName], queryValue])
-      .map(queryRow => encodeURI(queryRow.join('=')))
-      .join('&');
+    return encodeURI(
+      Object.entries(this.filterAllowed(searchQuery))
+        .map(([queryName, queryValue]) => [mapQueryScheme[queryName], queryValue])
+        .map(queryRow => encodeURI(queryRow.join('=')))
+        .join('&'),
+    );
   }
 }
 
