@@ -1,0 +1,32 @@
+{
+  "name": "@searcher/scopus-model",
+  "version": "1.2.0",
+  "private": true,
+  "description": "> TODO: description",
+  "author": "Evgeny Karasev <gnomskg@gmail.com>",
+  "homepage": "https://github.com/Hennos/spiiras-articles-searcher#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
+  },
+  "scripts": {
+    "eslint": "eslint ./ --config .eslintrc.json",
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
+  },
+  "dependencies": {
+    "@searcher/api-service": "^1.2.0",
+    "axios": "^0.19.2"
+  }
+}
