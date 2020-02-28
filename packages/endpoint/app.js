@@ -5,7 +5,7 @@ const path = require('path');
 const logger = require('morgan');
 const config = require('config');
 
-const { createService, Model } = require('@searcher/api-service');
+const { createService } = require('@searcher/api-service');
 const { createModel: createCrossrefModel } = require('@searcher/crossref-model');
 
 const indexRouter = require('./routes/index');
