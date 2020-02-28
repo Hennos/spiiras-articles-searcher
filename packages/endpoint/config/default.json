@@ -2,9 +2,9 @@
   "port": 3001,
 
   "crossref": {
+    "rows": 10,
     "agentName": "spiiras-articles-searcher",
     "agentVersion": "1.2",
-    "mailTo": "gnomskg@gmail.com",
-    "rows": 10
+    "mailTo": "gnomskg@gmail.com"
   }
 }
