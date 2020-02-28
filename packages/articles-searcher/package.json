@@ -1,7 +1,6 @@
 {
   "name": "articles-searcher",
   "version": "1.3.2",
-  "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "eslint": "eslint ./ --config .eslintrc.json",
@@ -9,9 +8,9 @@
     "debug": "node --inspect bin/www"
   },
   "dependencies": {
-    "@searcher/api-service": "^1.3.2",
-    "@searcher/crossref-model": "^1.3.2",
-    "@searcher/scopus-model": "^1.3.2",
+    "@articles-searcher/api-service": "^1.3.2",
+    "@articles-searcher/crossref-model": "^1.3.2",
+    "@articles-searcher/scopus-model": "^1.3.2",
     "config": "^3.2.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
