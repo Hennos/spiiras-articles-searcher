@@ -1,7 +1,7 @@
 'use strict';
 
 const axios = require('axios');
-const { Model } = require('@searcher/api-service');
+const { Model } = require('@articles-searcher/api-service');
 
 class CrossrefModel extends Model {
   constructor(options = {}) {

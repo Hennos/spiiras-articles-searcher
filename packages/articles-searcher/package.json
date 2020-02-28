@@ -1,6 +1,6 @@
 {
   "name": "articles-searcher",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "scripts": {
     "start": "node ./bin/www",
     "eslint": "eslint ./ --config .eslintrc.json",
@@ -8,9 +8,9 @@
     "debug": "node --inspect bin/www"
   },
   "dependencies": {
-    "@searcher/api-service": "^1.3.6",
-    "@searcher/crossref-model": "^1.3.6",
-    "@searcher/scopus-model": "^1.3.6",
+    "@articles-searcher/api-service": "^1.3.7",
+    "@articles-searcher/crossref-model": "^1.3.7",
+    "@articles-searcher/scopus-model": "^1.3.7",
     "config": "^3.2.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -23,5 +23,5 @@
     "type": "git",
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
-  "gitHead": "1d850840c5f3a7572ebe7c85273bb157bf3948b3"
+  "gitHead": "841062703a52788679a751d42b1a1ef44b22ffce"
 }
