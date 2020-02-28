@@ -1,6 +1,9 @@
 {
   "name": "@searcher/scopus-model",
   "version": "1.3.5",
+  "publishConfig": {
+    "access": "public"
+  },
   "description": "> TODO: description",
   "author": "Evgeny Karasev <gnomskg@gmail.com>",
   "homepage": "https://github.com/Hennos/spiiras-articles-searcher#readme",
@@ -28,5 +31,5 @@
     "@searcher/api-service": "^1.3.5",
     "axios": "^0.19.2"
   },
-  "gitHead": "4458d37f3948b8f80a4da55769d39015734a57e4"
+  "gitHead": "1d850840c5f3a7572ebe7c85273bb157bf3948b3"
 }
