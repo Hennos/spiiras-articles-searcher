@@ -22,5 +22,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
-  }
+  },
+  "gitHead": "4458d37f3948b8f80a4da55769d39015734a57e4"
 }

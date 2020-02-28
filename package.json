@@ -1,6 +1,5 @@
 {
-  "name": "root",
-  "private": true,
+  "name": "spiiras-articles-searcher",
   "scripts": {
     "start": "lerna run --stream start",
     "debug": "lerna run --stream debug",
