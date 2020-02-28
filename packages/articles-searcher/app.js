@@ -5,9 +5,9 @@ const path = require('path');
 const logger = require('morgan');
 const config = require('config');
 
-const { createService } = require('@searcher/api-service');
-const { createModel: createCrossrefModel } = require('@searcher/crossref-model');
-const { createModel: createScopusModel } = require('@searcher/scopus-model');
+const { createService } = require('@articles-searcher/api-service');
+const { createModel: createCrossrefModel } = require('@articles-searcher/crossref-model');
+const { createModel: createScopusModel } = require('@articles-searcher/scopus-model');
 
 const indexRouter = require('./routes/index');
 
