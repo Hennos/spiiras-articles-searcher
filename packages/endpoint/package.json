@@ -11,6 +11,7 @@
   "dependencies": {
     "@searcher/api-service": "^1.2.0",
     "@searcher/crossref-model": "^1.2.0",
+    "@searcher/scopus-model": "^1.2.0",
     "config": "^3.2.5",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
