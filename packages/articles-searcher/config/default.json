@@ -4,8 +4,8 @@
   "crossref": {
     "rows": 10,
     "agentName": "spiiras-articles-searcher",
-    "agentVersion": "1.3.0",
-    "mailTo": "gnomskg@gmail.com"
+    "agentVersion": "agentVersion",
+    "mailTo": "mailTo"
   },
 
   "scopus": {
