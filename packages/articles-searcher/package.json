@@ -1,7 +1,6 @@
 {
   "name": "articles-searcher",
   "version": "1.3.3",
-  "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "eslint": "eslint ./ --config .eslintrc.json",
