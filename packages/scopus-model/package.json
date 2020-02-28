@@ -1,5 +1,5 @@
 {
-  "name": "@searcher/api-service",
+  "name": "@searcher/scopus-model",
   "version": "1.3.0",
   "private": true,
   "description": "> TODO: description",
@@ -19,12 +19,14 @@
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
   "scripts": {
+    "eslint": "eslint ./ --config .eslintrc.json",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "express": "^4.17.1"
+    "@searcher/api-service": "^1.3.0",
+    "axios": "^0.19.2"
   }
 }

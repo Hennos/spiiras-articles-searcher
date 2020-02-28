@@ -17,7 +17,7 @@ class CrossrefModel extends Model {
     } = options;
 
     this.options = {
-      baseUrl: 'https://api.crossref.org',
+      baseUrl: 'https://api.crossref.org/works',
       allowedQuery: ['query', 'author', 'bibliographic'],
       rows: 10,
       ...modelOptions,
@@ -28,7 +28,7 @@ class CrossrefModel extends Model {
 
   async findArticle(id) {
     const { baseUrl } = this.options;
-    const command = `${baseUrl}/works/${id}`;
+    const command = `${baseUrl}/${id}`;
     const {
       data: { message: metadata },
     } = await axios.get(command, {
@@ -41,7 +41,7 @@ class CrossrefModel extends Model {
 
   async findArticles(searchQuery) {
     const { baseUrl, rows } = this.options;
-    const command = `${baseUrl}/works?rows=${rows}&${this.encodeQuery(searchQuery)}`;
+    const command = `${baseUrl}?rows=${rows}&${this.encodeQuery(searchQuery)}`;
     const {
       data: { message: metadata },
     } = await axios.get(command, {
@@ -73,10 +73,12 @@ class CrossrefModel extends Model {
 
   encodeQuery(searchQuery) {
     const mapQueryScheme = this.mapQueryScheme();
-    return Object.entries(this.filterAllowed(searchQuery))
-      .map(([queryName, queryValue]) => [mapQueryScheme[queryName], queryValue])
-      .map(queryRow => encodeURI(queryRow.join('=')))
-      .join('&');
+    return encodeURI(
+      Object.entries(this.filterAllowed(searchQuery))
+        .map(([queryName, queryValue]) => [mapQueryScheme[queryName], queryValue])
+        .map(queryRow => encodeURI(queryRow.join('=')))
+        .join('&'),
+    );
   }
 }
 

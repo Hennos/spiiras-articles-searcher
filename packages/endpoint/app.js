@@ -3,9 +3,11 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');
 const logger = require('morgan');
+const config = require('config');
 
-const { createService, Model } = require('@searcher/api-service');
+const { createService } = require('@searcher/api-service');
 const { createModel: createCrossrefModel } = require('@searcher/crossref-model');
+const { createModel: createScopusModel } = require('@searcher/scopus-model');
 
 const indexRouter = require('./routes/index');
 
@@ -23,14 +25,20 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 
 const crossrefModel = createCrossrefModel({
-  rows: 10,
+  rows: config.crossref.rows,
   agent: {
-    name: 'spiiras-articles-searcher',
-    version: '1.1.0',
-    mailTo: 'gnomskg@gmail.com',
+    name: config.crossref.agentName,
+    version: config.crossref.agentVersion,
+    mailTo: config.crossref.mailTo,
   },
 });
 createService(app, crossrefModel, '/crossref');
+
+const scopusModel = createScopusModel({
+  rows: config.scopus.rows,
+  // apiKey: config.scopus.apiKey,
+});
+createService(app, scopusModel, '/scopus');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
