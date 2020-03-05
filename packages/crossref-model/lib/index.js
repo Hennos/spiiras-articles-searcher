@@ -18,7 +18,7 @@ class CrossrefModel extends Model {
 
     this.options = {
       baseUrl: 'https://api.crossref.org/works',
-      allowedQuery: ['query', 'author', 'bibliographic'],
+      allowedQuery: ['query', 'author', 'bibliographic', 'affiliation'],
       rows: 10,
       ...modelOptions,
     };
