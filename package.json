@@ -4,6 +4,7 @@
     "start": "lerna run --stream start",
     "debug": "lerna run --stream debug",
     "test": "lerna run test",
+    "lint": "eslint packages/*/lib/**.js",
     "new-version": "lerna version --conventional-commits --yes",
     "diff": "lerna diff"
   },

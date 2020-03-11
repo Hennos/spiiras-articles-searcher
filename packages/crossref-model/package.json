@@ -21,7 +21,6 @@
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
   "scripts": {
-    "eslint": "eslint ./ --config .eslintrc.json",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
