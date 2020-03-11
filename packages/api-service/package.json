@@ -21,7 +21,8 @@
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
   "scripts": {
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "npm run jest",
+    "jest": "jest --forceExit"
   },
   "bugs": {
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
