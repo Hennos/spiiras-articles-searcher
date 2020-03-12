@@ -1,7 +1,7 @@
 {
   "name": "spiiras-articles-searcher",
   "scripts": {
-    "start": "lerna run start",
+    "start": "lerna run --stream start",
     "debug": "lerna run --stream debug",
     "test": "mocha",
     "test:watch": "mocha --watch",
