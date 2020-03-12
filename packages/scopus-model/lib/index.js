@@ -33,6 +33,13 @@ class ScopusModel extends Model {
       },
     });
     const metadata = data['search-results']['entry'][0];
+    const issn = metadata['prism:issn'] || metadata['prism:eIssn'];
+
+    if (issn) {
+      const publisherQuartile = await this.getJournalQuartile(issn);
+      metadata.publisherQuartile = `${publisherQuartile}`;
+    }
+
     return metadata || false;
   }
 
@@ -48,6 +55,22 @@ class ScopusModel extends Model {
     });
     const metadata = data['search-results']['entry'];
     return metadata || false;
+  }
+
+  async getJournalQuartile(issn) {
+    const { baseUrl } = this.options;
+    const command = `${baseUrl}/serial/title/issn/${issn}?apiKey=${this.apiKey}`;
+    const { data } = await axios.get(command, {
+      'Content-Type': 'application/json',
+    });
+    const serialTitleMetadata = data['serial-metadata-response']['entry'][0];
+    const publisherPercentile = serialTitleMetadata.citeScoreYearInfoList.citeScoreCurrentMetric;
+
+    if (!publisherPercentile) {
+      return false;
+    }
+
+    return this.calcQuartile(publisherPercentile);
   }
 
   filterAllowed(searchQuery) {
@@ -80,6 +103,10 @@ class ScopusModel extends Model {
         })
         .join(' AND '),
     );
+  }
+
+  calcQuartile(percentile) {
+    return 4 - Math.floor((parseFloat(percentile) * 100) / 25);
   }
 }
 
