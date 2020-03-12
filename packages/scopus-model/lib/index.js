@@ -7,21 +7,26 @@ class ScopusModel extends Model {
   constructor(options) {
     super(options);
 
-    const { apiKey = '', ...modelOptions } = options;
+    const { apiKey } = options;
+    if (!apiKey) {
+      throw new TypeError('ScopusModel: apiKey options if required');
+    }
+
+    const { rows = 10, ...modelOptions } = options;
 
     this.apiKey = apiKey;
 
     this.options = {
-      baseUrl: 'https://api.elsevier.com/content/search/scopus',
+      baseUrl: 'https://api.elsevier.com/content',
       allowedQuery: ['title', 'authors', 'keywords', 'affiliation'],
-      rows: 10,
+      rows,
       ...modelOptions,
     };
   }
 
   async findArticle(id) {
     const { baseUrl } = this.options;
-    const command = `${baseUrl}?apiKey=${this.apiKey}&query=DOI("${id}")`;
+    const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&query=DOI("${id}")`;
     const { data } = await axios.get(command, {
       headers: {
         'Content-Type': 'application/json',
@@ -33,9 +38,9 @@ class ScopusModel extends Model {
 
   async findArticles(searchQuery) {
     const { baseUrl, rows } = this.options;
-    const command = `${baseUrl}?apiKey=${this.apiKey}&count=${rows}&query=${this.encodeQuery(
-      searchQuery,
-    )}`;
+    const command = `${baseUrl}/search/scopus?apiKey=${
+      this.apiKey
+    }&count=${rows}&query=${this.encodeQuery(searchQuery)}`;
     const { data } = await axios.get(command, {
       headers: {
         'Content-Type': 'application/json',
