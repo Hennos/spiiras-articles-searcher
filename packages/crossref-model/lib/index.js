@@ -7,12 +7,13 @@ class CrossrefModel extends Model {
   constructor(options = {}) {
     super(options);
 
+    const { mailTo } = options.agent;
+    if (!mailTo) {
+      throw new TypeError('CrossrefModel: mailTo options if required');
+    }
+
     const {
-      agent: {
-        name: agentName = 'articles-searcher',
-        version: agentVersion = '1.0.0',
-        mailTo = 'gnomskg@gmail.com',
-      },
+      agent: { name: agentName = 'CrossrefSearcher', version: agentVersion = '1.0.0' },
       ...modelOptions
     } = options;
 
@@ -27,29 +28,37 @@ class CrossrefModel extends Model {
   }
 
   async findArticle(id) {
-    const { baseUrl } = this.options;
-    const command = `${baseUrl}/${id}`;
-    const {
-      data: { message: metadata },
-    } = await axios.get(command, {
-      headers: {
-        'User-Agent': this.userAgent,
-      },
-    });
-    return metadata;
+    try {
+      const { baseUrl } = this.options;
+      const command = `${baseUrl}/${id}`;
+      const {
+        data: { message: metadata },
+      } = await axios.get(command, {
+        headers: {
+          'User-Agent': this.userAgent,
+        },
+      });
+      return metadata;
+    } catch (error) {
+      return null;
+    }
   }
 
   async findArticles(searchQuery) {
-    const { baseUrl, rows } = this.options;
-    const command = `${baseUrl}?rows=${rows}&${this.encodeQuery(searchQuery)}`;
-    const {
-      data: { message: metadata },
-    } = await axios.get(command, {
-      headers: {
-        'User-Agent': this.userAgent,
-      },
-    });
-    return metadata;
+    try {
+      const { baseUrl, rows } = this.options;
+      const command = `${baseUrl}?rows=${rows}&${this.encodeQuery(searchQuery)}`;
+      const {
+        data: { message: metadata },
+      } = await axios.get(command, {
+        headers: {
+          'User-Agent': this.userAgent,
+        },
+      });
+      return metadata;
+    } catch (error) {
+      return null;
+    }
   }
 
   filterAllowed(searchQuery) {
@@ -76,7 +85,7 @@ class CrossrefModel extends Model {
     return encodeURI(
       Object.entries(this.filterAllowed(searchQuery))
         .map(([queryName, queryValue]) => [mapQueryScheme[queryName], queryValue])
-        .map(queryRow => encodeURI(queryRow.join('=')))
+        .map(queryRow => queryRow.join('='))
         .join('&'),
     );
   }
