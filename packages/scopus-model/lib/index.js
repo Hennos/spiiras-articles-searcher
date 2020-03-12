@@ -7,35 +7,47 @@ class ScopusModel extends Model {
   constructor(options) {
     super(options);
 
-    const { apiKey = '', ...modelOptions } = options;
+    const { apiKey } = options;
+    if (!apiKey) {
+      throw new TypeError('ScopusModel: apiKey options if required');
+    }
+
+    const { rows = 10, ...modelOptions } = options;
 
     this.apiKey = apiKey;
 
     this.options = {
-      baseUrl: 'https://api.elsevier.com/content/search/scopus',
+      baseUrl: 'https://api.elsevier.com/content',
       allowedQuery: ['title', 'authors', 'keywords', 'affiliation'],
-      rows: 10,
+      rows,
       ...modelOptions,
     };
   }
 
   async findArticle(id) {
     const { baseUrl } = this.options;
-    const command = `${baseUrl}?apiKey=${this.apiKey}&query=DOI("${id}")`;
+    const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&query=DOI("${id}")`;
     const { data } = await axios.get(command, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
     const metadata = data['search-results']['entry'][0];
+    const issn = metadata['prism:issn'] || metadata['prism:eIssn'];
+
+    if (issn) {
+      const publisherQuartile = await this.getJournalQuartile(issn);
+      metadata.publisherQuartile = `${publisherQuartile}`;
+    }
+
     return metadata || false;
   }
 
   async findArticles(searchQuery) {
     const { baseUrl, rows } = this.options;
-    const command = `${baseUrl}?apiKey=${this.apiKey}&count=${rows}&query=${this.encodeQuery(
-      searchQuery,
-    )}`;
+    const command = `${baseUrl}/search/scopus?apiKey=${
+      this.apiKey
+    }&count=${rows}&query=${this.encodeQuery(searchQuery)}`;
     const { data } = await axios.get(command, {
       headers: {
         'Content-Type': 'application/json',
@@ -43,6 +55,22 @@ class ScopusModel extends Model {
     });
     const metadata = data['search-results']['entry'];
     return metadata || false;
+  }
+
+  async getJournalQuartile(issn) {
+    const { baseUrl } = this.options;
+    const command = `${baseUrl}/serial/title/issn/${issn}?apiKey=${this.apiKey}`;
+    const { data } = await axios.get(command, {
+      'Content-Type': 'application/json',
+    });
+    const serialTitleMetadata = data['serial-metadata-response']['entry'][0];
+    const publisherPercentile = serialTitleMetadata.citeScoreYearInfoList.citeScoreCurrentMetric;
+
+    if (!publisherPercentile) {
+      return false;
+    }
+
+    return this.calcQuartile(publisherPercentile);
   }
 
   filterAllowed(searchQuery) {
@@ -75,6 +103,10 @@ class ScopusModel extends Model {
         })
         .join(' AND '),
     );
+  }
+
+  calcQuartile(percentile) {
+    return 4 - Math.floor((parseFloat(percentile) * 100) / 25);
   }
 }
 
