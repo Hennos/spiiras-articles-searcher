@@ -1,6 +1,6 @@
 {
   "name": "articles-searcher-service",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -10,9 +10,9 @@
     "url": "git+https://github.com/Hennos/articles-searcher-service.git"
   },
   "dependencies": {
-    "@articles-searcher/api-service": "^1.3.9",
-    "@articles-searcher/crossref-model": "^1.4.1",
-    "@articles-searcher/scopus-model": "^1.3.9",
+    "@articles-searcher/api-service": "^1.5.0",
+    "@articles-searcher/crossref-model": "^1.5.0",
+    "@articles-searcher/scopus-model": "^1.5.0",
     "config": "^3.3.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
