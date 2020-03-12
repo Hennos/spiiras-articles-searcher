@@ -1,6 +1,6 @@
 {
   "name": "@articles-searcher/crossref-model",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publishConfig": {
     "access": "public"
   },
@@ -28,7 +28,7 @@
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "@articles-searcher/api-service": "^1.3.9",
+    "@articles-searcher/api-service": "^1.4.2",
     "axios": "^0.19.2"
   }
 }
