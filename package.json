@@ -1,18 +1,27 @@
 {
   "name": "spiiras-articles-searcher",
   "scripts": {
-    "start": "lerna run --stream start",
+    "start": "lerna run start",
     "debug": "lerna run --stream debug",
-    "test": "lerna run test",
+    "test": "mocha",
+    "test:watch": "mocha --watch",
+    "test:prod": "npm run lint && npm run test -- --no-cache",
+    "lint": "eslint packages/*/lib/**.js",
     "new-version": "lerna version --conventional-commits --yes",
     "diff": "lerna diff"
   },
   "devDependencies": {
-    "lerna": "^3.19.0",
+    "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-prettier": "^3.1.2",
+    "lerna": "^3.19.0",
+    "mocha": "^7.1.0",
     "nodemon": "^2.0.2",
-    "prettier": "^1.19.1"
+    "prettier": "^1.19.1",
+    "sinon": "^9.0.1"
+  },
+  "mocha": {
+    "spec": "packages/*/__tests__/*.test.js"
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@articles-searcher/crossref-model",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "publishConfig": {
     "access": "public"
   },
@@ -21,15 +21,14 @@
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
   "scripts": {
-    "eslint": "eslint ./ --config .eslintrc.json",
-    "test": "echo \"Error: run tests from root\" && exit 1"
+    "test": "npm run jest",
+    "jest": "jest --forceExit"
   },
   "bugs": {
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "@articles-searcher/api-service": "^1.3.9",
+    "@articles-searcher/api-service": "^1.4.2",
     "axios": "^0.19.2"
-  },
-  "gitHead": "3bc63a2786c5d8186fe804e3095f5cbf44ab1ee0"
+  }
 }
