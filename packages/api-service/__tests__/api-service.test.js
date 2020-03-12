@@ -2,6 +2,4 @@
 
 const service = require('../lib');
 
-describe('api-service', () => {
-  it('needs tests');
-});
+describe('api-service', () => {});
