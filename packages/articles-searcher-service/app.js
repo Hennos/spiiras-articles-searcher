@@ -8,6 +8,7 @@ const config = require('config');
 const { createService } = require('@articles-searcher/api-service');
 const { createModel: createCrossrefModel } = require('@articles-searcher/crossref-model');
 const { createModel: createScopusModel } = require('@articles-searcher/scopus-model');
+const { createModel: createWOSModel } = require('@articles-searcher/wos-model');
 
 const indexRouter = require('./routes/index');
 
@@ -39,6 +40,12 @@ const scopusModel = createScopusModel({
   apiKey: config.scopus.apiKey,
 });
 createService(app, scopusModel, '/scopus');
+
+const wosModel = createWOSModel({
+  rows: config.wos.rows,
+  credentials: config.wos.credentials,
+});
+createService(app, wosModel, '/wos');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

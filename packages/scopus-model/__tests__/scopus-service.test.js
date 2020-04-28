@@ -4,8 +4,8 @@ const { expect } = require('chai');
 
 const { Model, createModel } = require('../lib');
 
-describe('scopus-service tests (with jest)', () => {
-  describe('creating scopus-service instance', () => {
+describe('scopus-model tests', () => {
+  describe('creating ScopusModel instance', () => {
     it('create Model instance with factory method and options', () => {
       const options = {
         rows: 10,
