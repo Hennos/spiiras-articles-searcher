@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request xmlns="http://www.isinet.com/xrpc42">
+   <fn name="LinksAMR.retrieve">
+      <list>
+         <map>
+            <val name="username">Petersburg_HG</val>
+            <val name="password">Welcome@2020</val>
+         </map>
+         <map>
+            <list name="WOS">
+               <val>timesCited</val>
+               <val>ut</val>
+               <val>doi</val>
+               <val>pmid</val>
+               <val>sourceURL</val>
+               <val>citingArticlesURL</val>
+               <val>relatedRecordsURL</val>
+            </list>
+         </map>
+         <map>
+            <map name="cite_1">
+               <val name="doi">10.1234/2007-0028</val>
+            </map>
+         </map>
+      </list>
+   </fn>
+</request>

@@ -1,0 +1,33 @@
+{
+  "name": "@articles-searcher/wos-model",
+  "version": "1.6.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "Web of Science API model for spiiras-articles-searcher",
+  "author": "Evgeny Karasev <gnomskg@gmail.com>",
+  "homepage": "https://github.com/Hennos/spiiras-articles-searcher#readme",
+  "license": "ISC",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
+  },
+  "dependencies": {
+    "@articles-searcher/api-service": "^1.6.0",
+    "axios": "^0.19.2"
+  }
+}

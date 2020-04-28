@@ -11,5 +11,13 @@
   "scopus": {
     "rows": 10,
     "apiKey": "apiKey"
+  },
+
+  "wos": {
+    "rows": 10,
+    "credentials": {
+      "username": "username",
+      "password": "password"
+    }
   }
 }
