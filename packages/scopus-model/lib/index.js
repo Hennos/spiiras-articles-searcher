@@ -23,6 +23,12 @@ class ScopusModel extends Model {
       rows,
       ...modelOptions,
     };
+
+    this.setRoute('/affilations/*', async ({ params }) => {
+      const doi = params[0];
+      const affilations = await this.findArticleAffilations(doi);
+      return affilations;
+    });
   }
 
   async findArticle(id) {
@@ -56,6 +62,23 @@ class ScopusModel extends Model {
     });
     const metadata = data['search-results']['entry'];
     return metadata || false;
+  }
+
+  async findArticleAffilations(id) {
+    const article = await this.findArticle(id);
+
+    const links = article['link'];
+    const command =
+      links.find(link => link['@ref'] === 'author-affiliation')['@href'] + `&apiKey=${this.apiKey}`;
+    const { data } = await axios.get(command, {
+      header: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const affilations = data['abstracts-retrieval-response'];
+
+    return affilations;
   }
 
   async getJournalQuartile(issn) {
