@@ -7,12 +7,13 @@ class WOSModel extends Model {
   constructor(options) {
     super(options);
 
-    const { credentials } = options;
+    this.name = 'wos';
+
+    const { rows = 10, credentials, ...modelOptions } = options;
+
     if (!(credentials && credentials.username && credentials.password)) {
       throw new TypeError('WOSModel: invalid credentials');
     }
-
-    const { rows = 10, ...modelOptions } = options;
 
     this.credentials = credentials;
 

@@ -7,6 +7,8 @@ class CrossrefModel extends Model {
   constructor(options = {}) {
     super(options);
 
+    this.name = 'crossref';
+
     const { mailTo } = options.agent;
     if (!mailTo) {
       throw new TypeError('CrossrefModel: mailTo options if required');

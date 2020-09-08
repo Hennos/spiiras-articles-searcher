@@ -7,12 +7,13 @@ class ScopusModel extends Model {
   constructor(options) {
     super(options);
 
-    const { apiKey } = options;
+    this.name = 'scopus';
+
+    const { rows = 10, apiKey, ...modelOptions } = options;
+
     if (!apiKey) {
       throw new TypeError('ScopusModel: apiKey options if required');
     }
-
-    const { rows = 10, ...modelOptions } = options;
 
     this.apiKey = apiKey;
 
@@ -60,15 +61,11 @@ class ScopusModel extends Model {
   async getJournalQuartile(issn) {
     const { baseUrl } = this.options;
     const command = `${baseUrl}/serial/title/issn/${issn}?apiKey=${this.apiKey}`;
-    const { data } = await axios.get(command, {
-      'Content-Type': 'application/json',
-    });
+    const { data } = await axios.get(command, { 'Content-Type': 'application/json' });
     const serialTitleMetadata = data['serial-metadata-response']['entry'][0];
     const publisherPercentile = serialTitleMetadata.citeScoreYearInfoList.citeScoreCurrentMetric;
 
-    if (!publisherPercentile) {
-      return false;
-    }
+    if (!publisherPercentile) return false;
 
     return this.calcQuartile(publisherPercentile);
   }

@@ -12,35 +12,23 @@ function createRouter(model) {
   const router = express.Router();
 
   router.get('/', async function(req, res, next) {
-    res.send('api-service');
+    res.send(model.getStatus(req));
   });
 
-  router.get('/article/*', async function(req, res, next) {
-    try {
-      const article = req.params[0];
-      const foundArticle = await model.findArticle(article);
-      if (foundArticle) {
-        res.send(foundArticle);
-      } else {
-        res.sendStatus(404);
+  model.routes.forEach(({ path, action }) => {
+    router.get(path, async function(req, res, next) {
+      try {
+        const { params, query } = req;
+        const result = await action({ params, query });
+        if (result) {
+          res.send(result);
+        } else {
+          res.send(404);
+        }
+      } catch (error) {
+        next(error);
       }
-    } catch (error) {
-      next(error);
-    }
-  });
-
-  router.get('/articles', async function(req, res, next) {
-    try {
-      const searchQuery = req.query;
-      const foundArticles = await model.findArticles(searchQuery);
-      if (foundArticles) {
-        res.send(foundArticles);
-      } else {
-        res.sendStatus(404);
-      }
-    } catch (error) {
-      next(error);
-    }
+    });
   });
 
   return router;
