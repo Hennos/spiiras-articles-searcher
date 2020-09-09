@@ -26,8 +26,8 @@ class ScopusModel extends Model {
 
     this.setRoute('/affilations/*', async ({ params }) => {
       const doi = params[0];
-      const affilations = await this.findArticleAffilations(doi);
-      return affilations;
+      const affilations = await this.getArticleAffilations(doi);
+      return affilations || 'No results';
     });
   }
 
@@ -64,10 +64,13 @@ class ScopusModel extends Model {
     return metadata || false;
   }
 
-  async findArticleAffilations(id) {
+  async getArticleAffilations(id) {
     const article = await this.findArticle(id);
 
     const links = article['link'];
+
+    if (!links) return null;
+
     const command =
       links.find(link => link['@ref'] === 'author-affiliation')['@href'] + `&apiKey=${this.apiKey}`;
     const { data } = await axios.get(command, {
