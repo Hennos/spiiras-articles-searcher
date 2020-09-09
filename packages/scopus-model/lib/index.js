@@ -24,10 +24,10 @@ class ScopusModel extends Model {
       ...modelOptions,
     };
 
-    this.setRoute('/affilations/*', async ({ params }) => {
+    this.setRoute('/affiliations/*', async ({ params }) => {
       const doi = params[0];
-      const affilations = await this.getArticleAffilations(doi);
-      return affilations || 'No results';
+      const affiliations = await this.getArticleAffiliations(doi);
+      return affiliations || 'No results';
     });
   }
 
@@ -64,7 +64,7 @@ class ScopusModel extends Model {
     return metadata || false;
   }
 
-  async getArticleAffilations(id) {
+  async getArticleAffiliations(id) {
     const article = await this.findArticle(id);
 
     const links = article['link'];
@@ -79,9 +79,38 @@ class ScopusModel extends Model {
       },
     });
 
-    const affilations = data['abstracts-retrieval-response'];
+    const authorsAffiliationsList = data['abstracts-retrieval-response'];
 
-    return affilations;
+    const fullAffiliations = await Promise.all(
+      authorsAffiliationsList.affiliation.map(affiliation => this.getFullAffiliations(affiliation)),
+    );
+
+    const articleAuthorsList = authorsAffiliationsList.authors.author;
+    const fullAuthorsAffiliationsList = articleAuthorsList.map(author => {
+      const { affiliation: authorAffiliations, ...authorData } = author;
+
+      let fullAuthorAffiliations = null;
+      if (Array.isArray(authorAffiliations)) {
+        fullAuthorAffiliations = authorAffiliations.map(authorAffiliation => {
+          const fullAuthorAffiliations = fullAffiliations.find(
+            affiliation => affiliation.id === authorAffiliation['@id'],
+          );
+          return fullAuthorAffiliations.data;
+        });
+      } else {
+        const fullAuthorAffiliation = fullAffiliations.find(
+          affiliation => affiliation.id === authorAffiliations['@id'],
+        );
+        fullAuthorAffiliations = [fullAuthorAffiliation.data];
+      }
+
+      return {
+        affiliation: fullAuthorAffiliations,
+        ...authorData,
+      };
+    });
+
+    return fullAuthorsAffiliationsList;
   }
 
   async getJournalQuartile(issn) {
@@ -94,6 +123,16 @@ class ScopusModel extends Model {
     if (!publisherPercentile) return false;
 
     return this.calcQuartile(publisherPercentile);
+  }
+
+  async getFullAffiliations(affiliation) {
+    const command = affiliation['@href'] + `?apiKey=${this.apiKey}`;
+    const { data } = await axios.get(command, {
+      header: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return { id: affiliation['@id'], data: data['affiliation-retrieval-response'] };
   }
 
   filterAllowed(searchQuery) {
