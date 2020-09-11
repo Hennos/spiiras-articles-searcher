@@ -24,10 +24,25 @@ class ScopusModel extends Model {
       ...modelOptions,
     };
 
-    this.setRoute('/affilations/*', async ({ params }) => {
+    this.setRoute('/affiliations/*', async ({ params }) => {
       const doi = params[0];
-      const affilations = await this.findArticleAffilations(doi);
-      return affilations;
+      try {
+        const affiliations = await this.getArticleAffiliations(doi);
+        return affiliations;
+      } catch (error) {
+        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        // return `Failed with searching article's affiliations by doi ${doi}`;
+      }
+    });
+    this.setRoute('/full/affiliations/*', async ({ params }) => {
+      const doi = params[0];
+      try {
+        const affiliations = await this.getArticleAffiliations(doi, true);
+        return affiliations;
+      } catch (error) {
+        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        // return `Failed with searching article's affiliations by doi ${doi}`;
+      }
     });
   }
 
@@ -64,21 +79,57 @@ class ScopusModel extends Model {
     return metadata || false;
   }
 
-  async findArticleAffilations(id) {
-    const article = await this.findArticle(id);
-
-    const links = article['link'];
-    const command =
-      links.find(link => link['@ref'] === 'author-affiliation')['@href'] + `&apiKey=${this.apiKey}`;
+  async getArticleAffiliations(id, full = false) {
+    const { baseUrl } = this.options;
+    const command = `${baseUrl}/abstract/doi/${id}?apiKey=${this.apiKey}`;
     const { data } = await axios.get(command, {
       header: {
         'Content-Type': 'application/json',
       },
     });
 
-    const affilations = data['abstracts-retrieval-response'];
+    const authorsAffiliationsResponse = data['abstracts-retrieval-response'];
+    const articleAffiliationsRetrievalList = authorsAffiliationsResponse.affiliation;
+    if (!authorsAffiliationsResponse.authors) return articleAffiliationsRetrievalList;
+    const authorsRetrievalList = authorsAffiliationsResponse.authors.author;
 
-    return affilations;
+    const articleCompleteAffiliationsList = await Promise.all(
+      articleAffiliationsRetrievalList.map(async affiliation => {
+        let affiliationData = null;
+        if (full) {
+          affiliationData = await this.getFullAffiliations(affiliation);
+        } else {
+          affiliationData = affiliation;
+        }
+        return { id: affiliation['@id'], data: affiliationData };
+      }),
+    );
+
+    const authorsCompleteAffilationsList = authorsRetrievalList.map(author => {
+      const { affiliation: authorAffiliations, ...authorData } = author;
+
+      let authorCompleteAffiliationsList = null;
+      if (Array.isArray(authorAffiliations)) {
+        authorCompleteAffiliationsList = authorAffiliations.map(authorAffiliation => {
+          const authorCompleteAffiliations = articleCompleteAffiliationsList.find(
+            fullAffiliation => fullAffiliation.id === authorAffiliation['@id'],
+          );
+          return authorCompleteAffiliations.data;
+        });
+      } else {
+        const authorCompleteAffiliations = articleCompleteAffiliationsList.find(
+          fullAffiliation => fullAffiliation.id === authorAffiliations['@id'],
+        );
+        authorCompleteAffiliationsList = [authorCompleteAffiliations.data];
+      }
+
+      return {
+        affiliation: authorCompleteAffiliationsList,
+        ...authorData,
+      };
+    });
+
+    return authorsCompleteAffilationsList;
   }
 
   async getJournalQuartile(issn) {
@@ -91,6 +142,16 @@ class ScopusModel extends Model {
     if (!publisherPercentile) return false;
 
     return this.calcQuartile(publisherPercentile);
+  }
+
+  async getFullAffiliations(affiliation) {
+    const command = affiliation['@href'] + `?apiKey=${this.apiKey}`;
+    const { data } = await axios.get(command, {
+      header: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return { id: affiliation['@id'], data: data['affiliation-retrieval-response'] };
   }
 
   filterAllowed(searchQuery) {
