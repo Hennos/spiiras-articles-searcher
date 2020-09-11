@@ -26,8 +26,23 @@ class ScopusModel extends Model {
 
     this.setRoute('/affiliations/*', async ({ params }) => {
       const doi = params[0];
-      const affiliations = await this.getArticleAffiliations(doi);
-      return affiliations || 'No results';
+      try {
+        const affiliations = await this.getArticleAffiliations(doi);
+        return affiliations;
+      } catch (error) {
+        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        // return `Failed with searching article's affiliations by doi ${doi}`;
+      }
+    });
+    this.setRoute('/full/affiliations/*', async ({ params }) => {
+      const doi = params[0];
+      try {
+        const affiliations = await this.getArticleAffiliations(doi, true);
+        return affiliations;
+      } catch (error) {
+        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        // return `Failed with searching article's affiliations by doi ${doi}`;
+      }
     });
   }
 
@@ -64,53 +79,57 @@ class ScopusModel extends Model {
     return metadata || false;
   }
 
-  async getArticleAffiliations(id) {
-    const article = await this.findArticle(id);
-
-    const links = article['link'];
-
-    if (!links) return null;
-
-    const command =
-      links.find(link => link['@ref'] === 'author-affiliation')['@href'] + `&apiKey=${this.apiKey}`;
+  async getArticleAffiliations(id, full = false) {
+    const { baseUrl } = this.options;
+    const command = `${baseUrl}/abstract/doi/${id}?apiKey=${this.apiKey}`;
     const { data } = await axios.get(command, {
       header: {
         'Content-Type': 'application/json',
       },
     });
 
-    const authorsAffiliationsList = data['abstracts-retrieval-response'];
+    const authorsAffiliationsResponse = data['abstracts-retrieval-response'];
+    const articleAffiliationsRetrievalList = authorsAffiliationsResponse.affiliation;
+    if (!authorsAffiliationsResponse.authors) return articleAffiliationsRetrievalList;
+    const authorsRetrievalList = authorsAffiliationsResponse.authors.author;
 
-    const fullAffiliations = await Promise.all(
-      authorsAffiliationsList.affiliation.map(affiliation => this.getFullAffiliations(affiliation)),
+    const articleCompleteAffiliationsList = await Promise.all(
+      articleAffiliationsRetrievalList.map(async affiliation => {
+        let affiliationData = null;
+        if (full) {
+          affiliationData = await this.getFullAffiliations(affiliation);
+        } else {
+          affiliationData = affiliation;
+        }
+        return { id: affiliation['@id'], data: affiliationData };
+      }),
     );
 
-    const articleAuthorsList = authorsAffiliationsList.authors.author;
-    const fullAuthorsAffiliationsList = articleAuthorsList.map(author => {
+    const authorsCompleteAffilationsList = authorsRetrievalList.map(author => {
       const { affiliation: authorAffiliations, ...authorData } = author;
 
-      let fullAuthorAffiliations = null;
+      let authorCompleteAffiliationsList = null;
       if (Array.isArray(authorAffiliations)) {
-        fullAuthorAffiliations = authorAffiliations.map(authorAffiliation => {
-          const fullAuthorAffiliations = fullAffiliations.find(
-            affiliation => affiliation.id === authorAffiliation['@id'],
+        authorCompleteAffiliationsList = authorAffiliations.map(authorAffiliation => {
+          const authorCompleteAffiliations = articleCompleteAffiliationsList.find(
+            fullAffiliation => fullAffiliation.id === authorAffiliation['@id'],
           );
-          return fullAuthorAffiliations.data;
+          return authorCompleteAffiliations.data;
         });
       } else {
-        const fullAuthorAffiliation = fullAffiliations.find(
-          affiliation => affiliation.id === authorAffiliations['@id'],
+        const authorCompleteAffiliations = articleCompleteAffiliationsList.find(
+          fullAffiliation => fullAffiliation.id === authorAffiliations['@id'],
         );
-        fullAuthorAffiliations = [fullAuthorAffiliation.data];
+        authorCompleteAffiliationsList = [authorCompleteAffiliations.data];
       }
 
       return {
-        affiliation: fullAuthorAffiliations,
+        affiliation: authorCompleteAffiliationsList,
         ...authorData,
       };
     });
 
-    return fullAuthorsAffiliationsList;
+    return authorsCompleteAffilationsList;
   }
 
   async getJournalQuartile(issn) {
