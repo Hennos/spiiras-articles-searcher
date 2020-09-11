@@ -20,13 +20,10 @@ function createRouter(model) {
       try {
         const { params, query } = req;
         const result = await action({ params, query });
-        if (result) {
-          res.send(result);
-        } else {
-          res.send(404);
-        }
+        res.send(result);
       } catch (error) {
-        next(error);
+        res.status(404);
+        res.send(error.message);
       }
     });
   });
