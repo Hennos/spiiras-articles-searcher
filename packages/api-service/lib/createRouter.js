@@ -20,9 +20,12 @@ function createRouter(model) {
       try {
         const { params, query } = req;
         const result = await action({ params, query });
-        res.send(result);
+
+        if (result === null) res.status(404).send('Not found');
+
+        if (result) res.send(result);
       } catch (error) {
-        res.status(404);
+        res.status(500);
         res.send(error.message);
       }
     });

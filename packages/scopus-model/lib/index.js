@@ -24,6 +24,15 @@ class ScopusModel extends Model {
       ...modelOptions,
     };
 
+    this.setRoute('/citing', async ({ query }) => {
+      const { doi, start = 0 } = query;
+      try {
+        const citing = await this.getCitingArticles(doi, start);
+        return citing;
+      } catch (error) {
+        throw new Error(`Failed with searching article's citing by doi ${doi}`);
+      }
+    });
     this.setRoute('/affiliations/*', async ({ params }) => {
       const doi = params[0];
       try {
@@ -31,7 +40,6 @@ class ScopusModel extends Model {
         return affiliations;
       } catch (error) {
         throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
-        // return `Failed with searching article's affiliations by doi ${doi}`;
       }
     });
     this.setRoute('/full/affiliations/*', async ({ params }) => {
@@ -41,13 +49,13 @@ class ScopusModel extends Model {
         return affiliations;
       } catch (error) {
         throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
-        // return `Failed with searching article's affiliations by doi ${doi}`;
       }
     });
   }
 
   async findArticle(id) {
     const { baseUrl } = this.options;
+
     const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&query=DOI("${id}")`;
     const { data } = await axios.get(command, {
       headers: {
@@ -55,18 +63,21 @@ class ScopusModel extends Model {
       },
     });
     const metadata = data['search-results']['entry'][0];
-    const issn = metadata['prism:issn'] || metadata['prism:eIssn'];
 
+    if (metadata.error) return null;
+
+    const issn = metadata['prism:issn'] || metadata['prism:eIssn'];
     if (issn) {
       const publisherQuartile = await this.getJournalQuartile(issn);
       metadata.publisherQuartile = `${publisherQuartile}`;
     }
 
-    return metadata || false;
+    return metadata;
   }
 
   async findArticles(searchQuery) {
     const { baseUrl, rows } = this.options;
+
     const command = `${baseUrl}/search/scopus?apiKey=${
       this.apiKey
     }&count=${rows}&query=${this.encodeQuery(searchQuery)}`;
@@ -76,7 +87,33 @@ class ScopusModel extends Model {
       },
     });
     const metadata = data['search-results']['entry'];
-    return metadata || false;
+    return metadata || null;
+  }
+
+  async getCitingArticles(id, start) {
+    const { baseUrl, rows } = this.options;
+
+    const citedArticle = await this.findArticle(id);
+
+    if (!citedArticle) return null;
+
+    const citedArticleTitle = citedArticle['dc:title'];
+    const fields = 'prism:doi,prism:coverDate,author';
+    const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&count=${rows}&start=${start}&fields=${fields}&query=reftitle(${citedArticleTitle})`;
+    const { data } = await axios.get(command, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const citing = {
+      totalResults: data['search-results']['opensearch:totalResults'],
+      startIndex: data['search-results']['opensearch:startIndex'],
+      itemsPerPage: data['search-results']['opensearch:itemsPerPage'],
+      entry: data['search-results']['entry'],
+    };
+
+    return citing;
   }
 
   async getArticleAffiliations(id, full = false) {
