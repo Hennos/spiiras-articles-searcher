@@ -19,6 +19,8 @@ class CrossrefModel extends Model {
       ...modelOptions
     } = options;
 
+    this.userAgent = `${agentName}/${agentVersion} (mailto:${mailTo})`;
+
     this.options = {
       baseUrl: 'https://api.crossref.org/works',
       allowedQuery: ['query', 'author', 'bibliographic', 'affiliation'],
@@ -26,7 +28,15 @@ class CrossrefModel extends Model {
       ...modelOptions,
     };
 
-    this.userAgent = `${agentName}/${agentVersion} (mailto:${mailTo})`;
+    this.setRoute('/affiliations/*', async ({ params }) => {
+      const doi = params[0];
+      try {
+        const affiliations = await this.getArticleAffiliations(doi);
+        return affiliations;
+      } catch (error) {
+        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+      }
+    });
   }
 
   async findArticle(id) {
@@ -63,6 +73,16 @@ class CrossrefModel extends Model {
     }
   }
 
+  async getArticleAffiliations(id) {
+    const foundArticle = await this.findArticle(id);
+
+    if (!foundArticle) return null;
+
+    const authorsWithAffiliation = this.parseArticleAffiliations(foundArticle);
+
+    return authorsWithAffiliation;
+  }
+
   filterAllowed(searchQuery) {
     const { allowedQuery } = this.options;
     const validated = {};
@@ -90,6 +110,26 @@ class CrossrefModel extends Model {
         .map(queryRow => queryRow.join('='))
         .join('&'),
     );
+  }
+
+  // В качестве элементов списка авторов присутствуют данные организаций с названием в поле name
+  parseArticleAffiliations(article) {
+    const contributors = article.author;
+    const authors = contributors.filter(contributor => !!contributor.given);
+    const affiliations = contributors.filter(contributor => !!contributor.name);
+    const authorsWithAffiliation = affiliations.map((affiliation, number) => {
+      const author =
+        affiliation.sequence === 'first'
+          ? authors.find(author => author.sequence === 'first')
+          : authors[number];
+      return {
+        ...author,
+        affiliation: {
+          name: affiliation.name,
+        },
+      };
+    });
+    return authorsWithAffiliation;
   }
 }
 
