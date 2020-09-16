@@ -117,18 +117,16 @@ class CrossrefModel extends Model {
     const contributors = article.author;
     const authors = contributors.filter(contributor => !!contributor.given);
     const affiliations = contributors.filter(contributor => !!contributor.name);
-    const authorsWithAffiliation = affiliations.map((affiliation, number) => {
-      const author =
-        affiliation.sequence === 'first'
-          ? authors.find(author => author.sequence === 'first')
-          : authors[number];
-      return {
-        ...author,
-        affiliation: {
-          name: affiliation.name,
-        },
-      };
-    });
+    const authorsWithAffiliation =
+      affiliations.length === 0
+        ? authors
+        : authors.map((author, number) => {
+            const affiliation =
+              author.sequence === 'first'
+                ? affiliations.find(affiliation => affiliation.sequence === 'first') || []
+                : affiliations[number] || [];
+            return { ...author, affiliation: [{ name: affiliation.name }] };
+          });
     return authorsWithAffiliation;
   }
 }
