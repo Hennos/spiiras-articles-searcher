@@ -1,6 +1,5 @@
 'use strict';
 
-const axios = require('axios');
 const { Model } = require('@articles-searcher/api-service');
 
 class ScopusModel extends Model {
@@ -30,7 +29,10 @@ class ScopusModel extends Model {
         const citing = await this.getCitingArticles(doi, start);
         return citing;
       } catch (error) {
-        throw new Error(`Failed with searching article's citing by doi ${doi}`);
+        if (error instanceof Model.DataServiceError) {
+          return `${error.status}: ${error.message}`;
+        }
+        throw error;
       }
     });
     this.setRoute('/affiliations/*', async ({ params }) => {
@@ -39,7 +41,10 @@ class ScopusModel extends Model {
         const affiliations = await this.getArticleAffiliations(doi);
         return affiliations;
       } catch (error) {
-        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        if (error instanceof Model.DataServiceError) {
+          return `${error.status}: ${error.message}`;
+        }
+        throw error;
       }
     });
     this.setRoute('/full/affiliations/*', async ({ params }) => {
@@ -48,7 +53,10 @@ class ScopusModel extends Model {
         const affiliations = await this.getArticleAffiliations(doi, true);
         return affiliations;
       } catch (error) {
-        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        if (error instanceof Model.DataServiceError) {
+          return `${error.status}: ${error.message}`;
+        }
+        throw error;
       }
     });
   }
@@ -57,19 +65,23 @@ class ScopusModel extends Model {
     const { baseUrl } = this.options;
 
     const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&query=DOI("${id}")`;
-    const { data } = await axios.get(command, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const { data } = await this.sendRequest(command, {
+      headers: { 'Content-Type': 'application/json' },
     });
-    const metadata = data['search-results']['entry'][0];
 
-    if (metadata.error) return null;
+    const searchResult = data['search-results'];
+    if (searchResult['opensearch:totalResults'] === '0') {
+      throw new Model.DataServiceError({
+        message: 'В базе данных SCOPUS не найдена искомая статья',
+        status: Model.DataServiceError.statusCodes.DATA_API_NOT_FOUND_DATA,
+      });
+    }
 
+    const metadata = searchResult['entry'][0];
     const issn = metadata['prism:issn'] || metadata['prism:eIssn'];
     if (issn) {
       const publisherQuartile = await this.getJournalQuartile(issn);
-      metadata.publisherQuartile = `${publisherQuartile}`;
+      metadata.publisherQuartile = publisherQuartile;
     }
 
     return metadata;
@@ -77,17 +89,13 @@ class ScopusModel extends Model {
 
   async findArticles(searchQuery) {
     const { baseUrl, rows } = this.options;
-
-    const command = `${baseUrl}/search/scopus?apiKey=${
-      this.apiKey
-    }&count=${rows}&query=${this.encodeQuery(searchQuery)}`;
-    const { data } = await axios.get(command, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    const encodedSearchQuery = this.encodeQuery(searchQuery);
+    const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&count=${rows}&query=${encodedSearchQuery}`;
+    const { data } = await this.sendRequest(command, {
+      headers: { 'Content-Type': 'application/json' },
     });
     const metadata = data['search-results']['entry'];
-    return metadata || null;
+    return metadata;
   }
 
   async getCitingArticles(id, start) {
@@ -100,7 +108,7 @@ class ScopusModel extends Model {
     const citedArticleTitle = citedArticle['dc:title'];
     const fields = 'prism:doi,prism:coverDate,author';
     const command = `${baseUrl}/search/scopus?apiKey=${this.apiKey}&count=${rows}&start=${start}&fields=${fields}&query=reftitle(${citedArticleTitle})`;
-    const { data } = await axios.get(command, {
+    const { data } = await this.sendRequest(command, {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -119,8 +127,8 @@ class ScopusModel extends Model {
   async getArticleAffiliations(id, full = false) {
     const { baseUrl } = this.options;
     const command = `${baseUrl}/abstract/doi/${id}?apiKey=${this.apiKey}`;
-    const { data } = await axios.get(command, {
-      header: {
+    const { data } = await this.sendRequest(command, {
+      headers: {
         'Content-Type': 'application/json',
       },
     });
@@ -170,23 +178,28 @@ class ScopusModel extends Model {
   }
 
   async getJournalQuartile(issn) {
-    const { baseUrl } = this.options;
-    const command = `${baseUrl}/serial/title/issn/${issn}?apiKey=${this.apiKey}`;
-    const { data } = await axios.get(command, { 'Content-Type': 'application/json' });
-    const serialTitleMetadata = data['serial-metadata-response']['entry'][0];
-    const publisherPercentile = serialTitleMetadata.citeScoreYearInfoList.citeScoreCurrentMetric;
+    try {
+      const { baseUrl } = this.options;
+      const command = `${baseUrl}/serial/title/issn/${issn}?apiKey=${this.apiKey}`;
+      const { data } = await this.sendRequest(command, {
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-    if (!publisherPercentile) return false;
+      const serialTitleMetadata = data['serial-metadata-response']['entry'][0];
+      const publisherPercentile = serialTitleMetadata.citeScoreYearInfoList.citeScoreCurrentMetric;
 
-    return this.calcQuartile(publisherPercentile);
+      if (!publisherPercentile) return false;
+
+      return this.calcQuartile(publisherPercentile);
+    } catch (error) {
+      return false;
+    }
   }
 
   async getFullAffiliations(affiliation) {
     const command = affiliation['@href'] + `?apiKey=${this.apiKey}`;
-    const { data } = await axios.get(command, {
-      header: {
-        'Content-Type': 'application/json',
-      },
+    const { data } = await this.sendRequest(command, {
+      headers: { 'Content-Type': 'application/json' },
     });
     return { id: affiliation['@id'], data: data['affiliation-retrieval-response'] };
   }
@@ -195,9 +208,7 @@ class ScopusModel extends Model {
     const { allowedQuery } = this.options;
     const validated = {};
     Object.entries(searchQuery).forEach(([queryName, queryValue]) => {
-      if (allowedQuery.includes(queryName)) {
-        validated[queryName] = queryValue;
-      }
+      if (allowedQuery.includes(queryName)) validated[queryName] = queryValue;
     });
     return validated;
   }
@@ -224,7 +235,7 @@ class ScopusModel extends Model {
   }
 
   calcQuartile(percentile) {
-    return 4 - Math.floor((parseFloat(percentile) * 100) / 25);
+    return 4 - Math.floor(parseFloat(percentile) / 25);
   }
 }
 
