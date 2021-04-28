@@ -15,6 +15,7 @@
     "@articles-searcher/crossref-model": "^1.13.0",
     "@articles-searcher/scopus-model": "^1.13.0",
     "@articles-searcher/wos-model": "^1.13.0",
+    "@articles-searcher/risc-model": "^1.13.0",
     "config": "^3.3.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

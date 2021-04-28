@@ -9,6 +9,7 @@ const { createService } = require('@articles-searcher/api-service');
 const { createModel: createCrossrefModel } = require('@articles-searcher/crossref-model');
 const { createModel: createScopusModel } = require('@articles-searcher/scopus-model');
 const { createModel: createWOSModel } = require('@articles-searcher/wos-model');
+const { createModel: createRISCModel } = require('@articles-searcher/risc-model');
 
 const indexRouter = require('./routes/index');
 
@@ -46,6 +47,11 @@ const wosModel = createWOSModel({
   credentials: config.wos.credentials,
 });
 createService(app, wosModel, '/wos');
+
+const riscModel = createRISCModel({
+  userCode: config.risc.userCode,
+});
+createService(app, riscModel, '/risc');
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
