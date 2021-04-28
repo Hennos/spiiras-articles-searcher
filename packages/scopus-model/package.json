@@ -1,6 +1,6 @@
 {
   "name": "@articles-searcher/scopus-model",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "publishConfig": {
     "access": "public"
   },
@@ -28,7 +28,7 @@
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "@articles-searcher/api-service": "^1.14.0",
+    "@articles-searcher/api-service": "^1.14.1",
     "axios": "^0.21.0"
   }
 }
