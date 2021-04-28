@@ -50,7 +50,7 @@ class WOSModel extends Model {
       },
     });
     const { data } = await axios.post(baseUrl, reqBody);
-    return data || false;
+    return data || null;
   }
 
   async findArticles(searchQuery) {
@@ -61,7 +61,7 @@ class WOSModel extends Model {
       searchQuery: this.formatSearchQuery(searchQuery),
     });
     const { data } = await axios.post(baseUrl, reqBody);
-    return data || false;
+    return data || null;
   }
 
   formatSearchQuery(searchQuery) {
