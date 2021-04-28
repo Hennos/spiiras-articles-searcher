@@ -42,17 +42,17 @@ class Model {
 
   async findArticle(id) {
     throw new TypeError(
-      `TypeError (api-service): ${this.name} service no implementation for findArticle method`,
+      `TypeError (api-service): ${this.name} service has not implementation for findArticle method`,
     );
   }
 
   async findArticles(searchQuery) {
     throw new TypeError(
-      `TypeError (api-service): ${this.name} service no implementation for findArticles method`,
+      `TypeError (api-service): ${this.name} service has not implementation for findArticles method`,
     );
   }
 
-  sendRequest(command, options) {
+  sendRequest(command, options = {}) {
     const {
       DATA_API_NOT_FOUND_DATA,
       DATA_API_REJECT_REQUEST,
