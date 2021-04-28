@@ -1,5 +1,5 @@
 {
-  "name": "@articles-searcher/api-service",
+  "name": "@articles-searcher/risc-model",
   "version": "1.14.0",
   "publishConfig": {
     "access": "public"
@@ -21,14 +21,14 @@
     "url": "git+https://github.com/Hennos/spiiras-articles-searcher.git"
   },
   "scripts": {
-    "test": "npm run jest",
-    "jest": "jest --forceExit"
+    "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "bugs": {
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
+    "@articles-searcher/api-service": "^1.14.0",
     "axios": "^0.19.2",
-    "express": "^4.17.1"
+    "xml2js": "^0.4.23"
   }
 }
