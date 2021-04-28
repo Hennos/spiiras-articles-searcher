@@ -1,6 +1,6 @@
 {
   "name": "@articles-searcher/risc-model",
-  "version": "1.14.0",
+  "version": "1.14.1",
   "publishConfig": {
     "access": "public"
   },
@@ -27,8 +27,8 @@
     "url": "https://github.com/Hennos/spiiras-articles-searcher/issues"
   },
   "dependencies": {
-    "@articles-searcher/api-service": "^1.14.0",
-    "axios": "^0.19.2",
+    "@articles-searcher/api-service": "^1.14.1",
+    "axios": "^0.21.0",
     "xml2js": "^0.4.23"
   }
 }
