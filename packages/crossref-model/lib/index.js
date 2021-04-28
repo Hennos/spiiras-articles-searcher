@@ -1,6 +1,5 @@
 'use strict';
 
-const axios = require('axios');
 const { Model } = require('@articles-searcher/api-service');
 
 class CrossrefModel extends Model {
@@ -29,57 +28,36 @@ class CrossrefModel extends Model {
     };
 
     this.setRoute('/affiliations/*', async ({ params }) => {
-      const doi = params[0];
       try {
+        const doi = params[0];
         const affiliations = await this.getArticleAffiliations(doi);
         return affiliations;
       } catch (error) {
-        throw new Error(`Failed with searching article's affiliations by doi ${doi}`);
+        if (error instanceof Model.DataServiceError) {
+          return `${error.status}: ${error.message}`;
+        }
+        throw error;
       }
     });
   }
 
   async findArticle(id) {
-    try {
-      const { baseUrl } = this.options;
-      const command = `${baseUrl}/${id}`;
-      const {
-        data: { message: metadata },
-      } = await axios.get(command, {
-        headers: {
-          'User-Agent': this.userAgent,
-        },
-      });
-      return metadata;
-    } catch (error) {
-      return null;
-    }
+    const { baseUrl } = this.options;
+    const command = `${baseUrl}/${id}`;
+    const response = await this.sendRequest(command, { headers: { 'User-Agent': this.userAgent } });
+    return response.data.message;
   }
 
   async findArticles(searchQuery) {
-    try {
-      const { baseUrl, rows } = this.options;
-      const command = `${baseUrl}?rows=${rows}&${this.encodeQuery(searchQuery)}`;
-      const {
-        data: { message: metadata },
-      } = await axios.get(command, {
-        headers: {
-          'User-Agent': this.userAgent,
-        },
-      });
-      return metadata;
-    } catch (error) {
-      return null;
-    }
+    const { baseUrl, rows } = this.options;
+    const command = `${baseUrl}?rows=${rows}&${this.encodeQuery(searchQuery)}`;
+    const response = await this.sendRequest(command, { headers: { 'User-Agent': this.userAgent } });
+    return response.data.message;
   }
 
   async getArticleAffiliations(id) {
-    const foundArticle = await this.findArticle(id);
-
-    if (!foundArticle) return null;
-
-    const authorsWithAffiliation = this.parseArticleAffiliations(foundArticle);
-
+    const article = await this.findArticle(id);
+    const authorsWithAffiliation = this.parseArticleAffiliations(article);
     return authorsWithAffiliation;
   }
 
