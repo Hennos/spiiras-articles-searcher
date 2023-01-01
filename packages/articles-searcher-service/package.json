@@ -16,7 +16,7 @@
     "@articles-searcher/risc-model": "^1.14.1",
     "@articles-searcher/scopus-model": "^1.14.1",
     "@articles-searcher/wos-model": "^1.14.1",
-    "config": "^3.3.0",
+    "config": "^3.3.8",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.1",
